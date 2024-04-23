@@ -45,6 +45,15 @@ async function run() {
         res.send(result);
     });
 
+
+    // Cart related apis
+
+    app.get('/carts', async(req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+        const result = await cartsCollection.find(query).toArray();
+        res.send(result);
+    });
     app.post('/carts', async(req, res) => {
       const cartItem = req.body;
       const result = await cartsCollection.insertOne(cartItem);
