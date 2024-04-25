@@ -33,7 +33,6 @@ async function run() {
     const menuCollection = db.collection("menuCollection");
     const reviewsCollection = db.collection("reviewsCollection");
     const cartsCollection = db.collection("cartsCollection");
-    const itemsCollection = db.collection('items');
 
     // jwt related apis
     app.post("/jwt", (req, res) => {
@@ -130,16 +129,44 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/reviews", async (req, res) => {
-      const result = await reviewsCollection.find().toArray();
+    app.get('/menu/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await menuCollection.findOne(query);
       res.send(result);
     });
 
-    //Add new items related apis
-
-    app.post('/add-item', async (req, res) => {
+    app.post('/menu', verifyToken, verifyAdmin, async (req, res) => {
       const item = req.body;
-      const result = await itemsCollection.insertOne(item);
+      const result = await menuCollection.insertOne(item);
+      res.send(result);
+    });
+
+    app.patch('/menu/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          name: item.name,
+          category: item.category,
+          price: item.price,
+          receipe: item.receipe,
+        }
+      };
+      const result = await menuCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    app.delete('/menu/:id', verifyToken, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await menuCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    app.get("/reviews", async (req, res) => {
+      const result = await reviewsCollection.find().toArray();
       res.send(result);
     });
 
