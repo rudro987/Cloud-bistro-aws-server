@@ -33,6 +33,7 @@ async function run() {
     const menuCollection = db.collection("menuCollection");
     const reviewsCollection = db.collection("reviewsCollection");
     const cartsCollection = db.collection("cartsCollection");
+    const itemsCollection = db.collection('items');
 
     // jwt related apis
     app.post("/jwt", (req, res) => {
@@ -131,6 +132,14 @@ async function run() {
 
     app.get("/reviews", async (req, res) => {
       const result = await reviewsCollection.find().toArray();
+      res.send(result);
+    });
+
+    //Add new items related apis
+
+    app.post('/add-item', async (req, res) => {
+      const item = req.body;
+      const result = await itemsCollection.insertOne(item);
       res.send(result);
     });
 
